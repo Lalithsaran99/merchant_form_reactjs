@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-array-constructor */
 import React from 'react';
-import { MDBInput,MDBBtn } from 'mdbreact';
+import { MDBInput } from 'mdbreact';
 import './index.css';
 var selectedRow = null;
 class App extends React.Component{
