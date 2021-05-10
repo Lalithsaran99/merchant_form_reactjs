@@ -1,259 +1,393 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-array-constructor */
-import React from 'react';
-import { MDBInput } from 'mdbreact';
 import './index.css';
-var selectedRow = null;
-class App extends React.Component{
- 
-  handleSubmit(e){
-    e.preventDefault();
-    e.stopPropagation();
-    this.onFormSubmit();
-  } 
-  onFormSubmit = () => {
-        var formData = this.readFormData();
-        var selectedRow = null;
-        if (selectedRow == null){
-            this.insertNewRecord(formData);
-        }
-        else{
-            this.updateRecord(formData);
-        }
-        this.resetForm();
-}
-  radiobutton = () =>{
-    var ele = document.getElementsByName('type');
-    var val;
-    for(var i=0;i<ele.length;i++)
-    {
-        if(ele[i].checked)
-            val=ele[i].value;
-    }
-    
-    return val;
-  }
-  selbutton = () =>{
-    var selected = [];
-  for (var option of document.getElementById('category').options) {
-    if (option.selected) {
-      selected.push(option.value);
-    }
-  }
-    
-    return selected;
-}
-  radiobutton2 = () =>{
-    var ele = document.getElementsByName('criticalaccount');
-    var val;
-    for(var i=0;i<ele.length;i++)
-    {
-        if(ele[i].checked)
-            val=ele[i].value;
-    }
-    
-    return val;
-}
-  checkboxbutton =()=>
-  {
-    
-    var selected = new Array();
- 
-        var payment = document.getElementsByName("paymentoptions");
+import React  from 'react';
+console.clear();
+const { PureComponent } = React;
+class App extends PureComponent {
+   constructor(props){
+      super(props);
+      this.handleSelectChange = this.handleSelectChange.bind(this);
+   }
+   state = {
+      formState: {
+         id: '',
+         Name: "",
+         email: "",
+         phone: "",
+         website: "",
+         contactname: "",
+         contactphone: "",
+         contactemail: "",
+         notes: "",
+         type: "",
+         category:"",
+         commissionpercentage: "",
+         activefrom: "",
+         criticalaccount: "",
+         paymentoptions: "",
+         checkedItems:new Map(),
+         mode: "submit"
+      },
+      users: [
+         {
+            id: 0,
+            name: "david",
+            email: "david_xc3@hotmail.com",
+            phone: "9435456534",
+            website: "dave.net",
+            contactname: "david",
+            contactphone: "9883992002",
+            contactemail: "david_xc3@hotmail.com",
+            notes: "jjsjkfldj",
+            type: "SmallBusiness",
+            category: "Clothes,Toys,Groceries",
+            commissionpercentage: "2",
+            activefrom: "2021-05-05",
+            criticalaccount: "Yes",
+            paymentoptions: "COD,UPI,CardPayment",
+            updating: false
+         }
+      ]
+   };
 
-        var val;
+   resetFormState = () => {
+      this.setState({
+         formState: {
+            name: "",
+            email: "",
+            phone: "",
+            website: "",
+            contactname: "",
+            contactphone: "",
+            contactemail: "",
+            notes: "",
+            type: "",
+            category:"",
+            commissionpercentage: "",
+            activefrom: "",
+            criticalaccount: "",
+            paymentoptions: "",
+            mode: "submit",
+            id: ""
+         }
+      });
+   };
 
-        for (var i = 0; i < payment.length; i++) {
-            if (payment[i].checked) {
-                selected.push(payment[i].value);
+   onChange = event => {
+      this.setState({
+         formState: {
+            ...this.state.formState,
+            [event.target.name]: event.target.value
+         }
+      });
+   };
+   
+   handleSelectChange(e){
+      var options = e.target.options;
+            var value = [];
+            for (var i = 0, l = options.length; i < l; i++) {
+              if (options[i].selected) {
+                value.push(options[i].value);
+              }
             }
-        }
-        if(selected.length>0)
-        {
-            val=selected.join(",");
-        }
-        return val;
-  }
-  readFormData = () =>{
-    var formData = {};
-    formData["name"] = document.getElementById("name").value;
-    formData["email"] = document.getElementById("email").value;
-    formData["phone"] = document.getElementById("phone").value;
-    formData["website"] = document.getElementById("website").value;
-    formData["contactname"] = document.getElementById("contactname").value;
-    formData["contactemail"] = document.getElementById("contactemail").value;
-    formData["contactphone"] = document.getElementById("contactphone").value;
-    formData["notes"] = document.getElementById("notes").value;
-    formData["type"] = this.radiobutton();
-    formData["category"] = this.selbutton();
-    formData["commissionpercentage"] = document.getElementById("commissionpercentage").value;
-    formData["activefrom"] = document.getElementById("activefrom").value;
-    formData["criticalaccount"] = this.radiobutton2();
-    formData["paymentoptions"] = this.checkboxbutton();
-    return formData;
+            this.setState({category: value});
+   }
+   handlecheckChange(event){
+      var isChecked = event.target.checked;
+      var item = event.target.value;
+
+      this.setState(prevState => ({checkedItems:prevState.checkedItems.set(item,isChecked)}));
+   }
+
+   radiobutton = (e) =>{
+      this.setState({
+         type: e.currentTarget.value
+         });
+   }
+   onSubmit = event => {
+      const { users, formState } = this.state;
+      event.preventDefault();
+      const name = event.target.querySelector("input[name='name']")
+         .value;
+      const email = event.target.querySelector("input[name='email']")
+         .value;
+      const phone = event.target.querySelector("input[name='phone']").value;
+      const website = event.target.querySelector("input[name='website']").value;
+      const contactname = event.target.querySelector("input[name='contactname']").value;
+      const contactphone = event.target.querySelector("input[name='contactphone']").value;
+      const contactemail = event.target.querySelector("input[name='contactemail']").value;
+      const notes = event.target.querySelector("input[name='notes']").value;
+      const type = event.target.querySelector("input[name='type']").value;
+      const category = event.target.querySelector("select[name='category']").value;
+      const commissionpercentage = event.target.querySelector("input[name='commissionpercentage']").value;
+      const activefrom = event.target.querySelector("input[name='activefrom']").value;
+      const criticalaccount = event.target.querySelector("input[name='criticalaccount']").value;
+      const paymentoptions = event.target.querySelector("input[name='paymentoptions']").value;
+
+      if (formState.mode === "submit") {
+         this.setState({
+            users: [
+               ...this.state.users,
+               {
+                  name,
+                  email,
+                  phone,
+                  website,
+                  contactname,
+                  contactphone,
+                  contactemail,
+                  notes,
+                  type,
+                  category,
+                  commissionpercentage,
+                  activefrom,
+                  criticalaccount,
+                  paymentoptions,
+                  updating: false,
+                  id: this.state.users[this.state.users.length - 1].id + 1
+               }
+            ]
+         });
+      } else if (formState.mode === "edit") {
+         const index = users.find((user)=> user.id === formState.id).id;
+         users[index] = {
+                  name,
+                  email,
+                  phone,
+                  website,
+                  contactname,
+                  contactphone,
+                  contactemail,
+                  notes,
+                  type,
+                  category,
+                  commissionpercentage,
+                  activefrom,
+                  criticalaccount,
+                  paymentoptions,
+                  updating: false,
+                  id: users[index].id
+               }
+         this.setState({
+            users: [...users]
+         });
+      }
+
+      this.resetFormState();
+   };
+
+   updateUser = key => {
+      let { users } = this.state;
+      users[key].updating = true;
+
+      this.setState({
+         formState: { ...this.state.users[key], mode: "edit" },
+         users
+      });
+   };
+
+   deleteUser = key => {
+      let { users } = this.state;
+      users.splice(key, 1);
+      this.setState({
+         users: [...users]
+      });
+   };
+
+   render() {
+      const { users, formState } = this.state;
+      return (
+         <div>
+            <Form
+               formState={formState}
+               onChange={this.onChange}
+               onSubmit={this.onSubmit}
+            />
+            <Table
+               users={users}
+               updateUser={this.updateUser}
+               deleteUser={this.deleteUser}
+            />
+         </div>
+      );
+   }
 }
 
- insertNewRecord = (data)=> {
-    
-    var store = Object.entries(data);
+const Table = ({ users = [], updateUser, deleteUser }) => {
+   return (
+      <div className="table">
+         <div className="table-header">
+            <div className="row">
+               <div className="column">Name</div>
+               <div className="column">Email</div>
+               <div className="column">Phone</div>
+               <div className="column">Website</div>
+               <div className="column">ContactName</div>
+               <div className="column">ContactPhone</div>
+               <div className="column">ContactEmail</div>
+               <div className="column">Notes</div>
+               <div className="column">Type</div>
+               <div className="column">Category</div>
+               <div className="column">CommissionPercentage</div>
+               <div className="column">ActiveFrom</div>
+               <div className="column">CriticalAccount</div>
+               <div className="column">PaymentOptions</div>
+               <div className="column">Options</div>
+            </div>
+         </div>
+         <div className="table-body">
+            {users.map((user, key) => {
+               return (
+                  <div className={`row ${user.updating ? "updating" : ""}`}>
+                     <div className="column">{user.name}</div>
+                     <div className="column">{user.email}</div>
+                     <div className="column">{user.phone}</div>
+                     <div className="column">{user.website}</div>
+                     <div className="column">{user.contactname}</div>
+                     <div className="column">{user.contactphone}</div>
+                     <div className="column">{user.contactemail}</div>
+                     <div className="column">{user.notes}</div>
+                     <div className="column">{user.type}</div>
+                     <div className="column">{user.category}</div>
+                     <div className="column">{user.commissionpercentage}</div>
+                     <div className="column">{user.activefrom}</div>
+                     <div className="column">{user.criticalaccount}</div>
+                     <div className="column">{user.paymentoptions}</div>
+                     <div className="column">
+                        <button
+                           className="icon"
+                           onClick={() => updateUser(key)}
+                        >
+                           <i class="far fa-edit" />
+                        </button>
+                        <button className="icon">
+                           <i
+                              class="fas fa-user-minus"
+                              onClick={() => deleteUser(key)}
+                           />
+                        </button>
+                     </div>
+                  </div>
+               );
+            })}
+         </div>
+      </div>
+   );
+};
 
-    localStorage.setItem("merchantform",JSON.stringify(data));
-
-    var retrievedData = JSON.parse(localStorage.getItem("merchantform"));
-    
-    var table = document.getElementById("merchantform").getElementsByTagName('tbody')[0];
-    var newRow = table.insertRow(table.length);
-    var cell1 = newRow.insertCell(0);
-    cell1.innerHTML = retrievedData.name;
-    var cell2 = newRow.insertCell(1);
-    cell2.innerHTML = retrievedData.email;
-    var cell3 = newRow.insertCell(2);
-    cell3.innerHTML = retrievedData.phone;
-    var cell4 = newRow.insertCell(3);
-    cell4.innerHTML = retrievedData.website;
-    var cell5 = newRow.insertCell(4);
-    cell5.innerHTML = retrievedData.contactname;
-    var cell6 = newRow.insertCell(5);
-    cell6.innerHTML = retrievedData.contactphone;
-    var cell7 = newRow.insertCell(6);
-    cell7.innerHTML = retrievedData.contactemail;
-    var cell8 = newRow.insertCell(7);
-    cell8.innerHTML = retrievedData.notes;
-    var cell9 = newRow.insertCell(8);
-    cell9.innerHTML = retrievedData.type;
-    var cell10 = newRow.insertCell(9);
-    cell10.innerHTML = retrievedData.category;
-    var cell11 = newRow.insertCell(10);
-    cell11.innerHTML = retrievedData.commissionpercentage;
-    var cell12 = newRow.insertCell(11);
-    cell12.innerHTML = retrievedData.activefrom;
-    var cell13 = newRow.insertCell(12);
-    cell13.innerHTML = retrievedData.criticalaccount;
-    var cell14 = newRow.insertCell(13);
-    cell14.innerHTML = retrievedData.paymentoptions;
-    var cell15 =newRow.insertCell(14);
-    cell15.innerHTML = `<a onClick = {()=>{onEdit(this)}}>Edit</a>
-                          <a onClick = {()=>{onDelete(this)}}>Delete</a>`;
-}
-
- resetForm = () => {
-    document.getElementById("name").value = "";
-    document.getElementById("email").value = "";
-    document.getElementById("phone").value = "";
-    document.getElementById("website").value = "";
-    document.getElementById("contactname").value = "";
-    document.getElementById("contactphone").value = "";
-    document.getElementById("contactemail").value = "";
-    document.getElementById("notes").value = "";
-    document.getElementsByName("type").value = "";
-    document.getElementsByName("category").value = "";
-    document.getElementById("commissionpercentage").value = "";
-    document.getElementById("activefrom").value = "";
-    document.getElementsByName("criticalaccount").value = "";
-    document.getElementsByName("paymentoptions").value = "";
-    selectedRow = null;
-}
-
-   onEdit(td){
-    selectedRow = td.parentElement.parentElement;
-    document.getElementById("name").value = selectedRow.cells[0].innerHTML;
-    document.getElementById("email").value = selectedRow.cells[1].innerHTML;
-    document.getElementById("phone").value = selectedRow.cells[2].innerHTML;
-    document.getElementById("website").value = selectedRow.cells[3].innerHTML;
-    document.getElementById("contactname").value = selectedRow.cells[4].innerHTML;
-    document.getElementById("contactphone").value = selectedRow.cells[5].innerHTML;
-    document.getElementById("contactemail").value = selectedRow.cells[6].innerHTML;
-    document.getElementById("notes").value = selectedRow.cells[7].innerHTML;
-    document.getElementsByName("type").value = selectedRow.cells[8].innerHTML;
-    document.getElementsByName("category").value = selectedRow.cells[9].innerHTML;
-    document.getElementById("commissionpercentage").value = selectedRow.cells[10].innerHTML;
-    document.getElementById("activefrom").value = selectedRow.cells[11].innerHTML;
-    document.getElementsByName("criticalaccount").value = selectedRow.cells[12].innerHTML;
-    document.getElementsByName("paymentoptions").value = selectedRow.cells[13].innerHTML;
-}
- updateRecord = (formData) =>{
-  
-    selectedRow.cells[0].innerHTML = formData.name;
-    selectedRow.cells[1].innerHTML = formData.email;
-    selectedRow.cells[2].innerHTML = formData.phone;
-    selectedRow.cells[3].innerHTML = formData.website;
-    selectedRow.cells[4].innerHTML = formData.contactname;
-    selectedRow.cells[5].innerHTML = formData.contactphone;
-    selectedRow.cells[6].innerHTML = formData.contactemail;
-    selectedRow.cells[7].innerHTML = formData.notes;
-    selectedRow.cells[8].innerHTML = formData.type;
-    selectedRow.cells[9].innerHTML = formData.category;
-    selectedRow.cells[10].innerHTML = formData.commissionpercentage;
-    selectedRow.cells[11].innerHTML = formData.activefrom;
-    selectedRow.cells[12].innerHTML = formData.criticalaccount;
-    selectedRow.cells[13].innerHTML = formData.paymentoptions;
-}
-
- onDelete(td){
-    if (this.confirm('Are you sure to delete this record ?')) {
-        var row = td.parentElement.parentElement;
-        document.getElementById("merchantform").deleteRow(row.rowIndex);
-        this.resetForm();
-    }
-}
-  render(){
-    return(
-      <form>
-                  <MDBInput label="Name" icon ="user" input type="text" id="name" name="name" placeholder="Your name" required/>
-              
-                  <MDBInput label="Email" icon = "envelope" input type="text" id="email" name="email" placeholder="Your Email" required/>
-                
-                  <MDBInput label="Phone" icon = "mobile" input type="text" id="phone" name="phone" placeholder="Your Phone no" max="10" required/>
-                  
-                  <MDBInput label="Website" icon = "globe" input type="text" id="website" name="website" placeholder="Your website" required/>
-    
-                  <MDBInput label="ContactName" icon = "user" input type="text" id="contactname" name="contactname" placeholder="Your contactname" required/>
-    
-                  <MDBInput label="ContactPhone" icon = "mobile" input type="text" id="contactphone" name="contactphone" placeholder="Your contactphone" max="10" required/>
-    
-                  <MDBInput label="ContactEmail" icon="envelope" input type="text" id="contactemail" name="contactemail" placeholder="Your contactemail" required/>
-    
-                  <MDBInput type="textarea" label ="Notes" icon="book" id="notes" name="notes" placeholder="Your Notes" required/>
-    
-                  <label for="type">Type</label><br/>
+const Field = ({ label = "", name = "", value = "", onChange }) => {
+   return (
+      <div className="field">
+         <label htmlFOR={name}>{label}</label>
+         <input type="text" name={name} value={value} onChange={onChange} />
+      </div>
+   );
+};
+const Field3 = ({ label = "", name = "", value = "", onChange }) => {
+   return (
+      <div className="field">
+         <label htmlFOR={name}>{label}</label>
+         <input type="date" name={name} value={value} onChange={onChange} />
+      </div>
+   );
+};
+const Form = ({formState, onChange, onSubmit, selected, handleSelectChange, handlecheckChange}) => {
+   return (
+      <form className="form" onSubmit={onSubmit}>
+         <fieldset>
+            <Field
+               name="name"
+               label="Name"
+               value={formState.name}
+               onChange={onChange}
+            />
+            <Field
+               name="email"
+               label="Email"
+               value={formState.email}
+               onChange={onChange}
+            />
+            <Field
+               name="phone"
+               label="Phone"
+               value={formState.phone}
+               onChange={onChange}
+            />
+            <Field
+               name="website"
+               label="Website"
+               value={formState.website}
+               onChange={onChange}
+            />
+            <Field
+               name="contactname"
+               label="Contactname"
+               value={formState.contactname}
+               onChange={onChange}
+            />
+            <Field
+               name="contactphone"
+               label="Contactphone"
+               value={formState.contactphone}
+               onChange={onChange}
+            />
+            <Field
+               name="contactemail"
+               label="Contactemail"
+               value={formState.contactemail}
+               onChange={onChange}
+            />
+            <Field
+               name="notes"
+               label="Notes"
+               value={formState.notes}
+               onChange={onChange}
+            />
+            <label for="type">Type</label><br></br>
                   <input type="radio" id="type" name="type" value="smallbusiness"/>
-                  <label for="smallbusiness">Small Business</label><br/>
+                  <label for="smallbusiness">Small Business</label><br></br>
                   <input type="radio" id="type" name="type" value="enterprise"/>
-                  <label for="enterprise">Enterprise</label><br/>
+                  <label for="enterprise">Enterprise</label><br></br>
                   <input type="radio" id="type" name="type" value="entrepreneur"/>
-                  <label for="entrepreneur">Entrepreneur</label><br/>
-    
-    
-                  <label for="category">Category</label><br></br>
-                  <select id="category" name="category" multiple>
-                    <option value="clothes">Clothes</option>
-                    <option value="toys" >Toys</option>
-                    <option value="groceries">Groceries</option>
-                    <option value="electronics">Electronics</option>
-                    <option value="digital">Digital</option>
-                  </select><br></br>
-                
-                  <MDBInput label ="CommissionPercentage" icon="percentage" input type="number" id="commissionpercentage" name="commissionpercentage" placeholder="Your CommissionPercentage"  required/>
-                  
-                  <MDBInput icon="date" input type="date" id="activefrom" name="activefrom" required/><br/>
-    
-                  <label for="criticalaccount">Critical Account</label><br/>
-                  <input type="radio" id="criticalaccount" name="criticalaccount" value="yes"/>
-                  <label for="yes">Yes</label><br/>
-                  <input type="radio" id="criticalaccount" name="criticalaccount" value="no"/>
-                  <label for="no" >No</label><br/>
-    
-                  <label for="paymentoptions">Payment Options</label><br/>
-                  <input type="checkbox" id="paymentoptions" name="paymentoptions" value="COD"/>
-                  <label for="COD">Cash on Delivery</label><br/>
-                  <input type="checkbox" id="paymentoptions" name="paymentoptions" value="UPI"/>
-                  <label for="UPI">UPI</label><br/>
-                  <input type="checkbox" id="paymentoptions" name="paymentoptions" value="CardPayment"/> 
-                  <label for="cardpayment">Card payment</label><br/>
-    
-                  <button type="simpleQuery" onClick = {(e)=>{this.handleSubmit(e)}}>Submit</button><br></br>
-        </form>
-    );
-  }
-}
+                  <label for="entrepreneur">Entrepreneur</label><br></br>
+         <label for="category">Category</label> 
+         <select name="category" onChange={handleSelectChange} multiple={true}>
+                 <option value="Clothes" >Clothes</option>
+                 <option value="Toys" >Toys</option>
+                 <option value="Groceries" >Groceries</option>
+                 <option value="Electronics" >Electronics</option>
+                 <option value="Digital">Digital</option>
+           </select>
+           <Field
+               name="commissionpercentage"
+               label="Commissionpercentage"
+               value={formState.commissionpercentage}
+               onChange={onChange}
+           />
+           <Field3
+               name="activefrom"
+               label="Activefrom"
+               value={formState.activefrom}
+               onChange={onChange}
+           />
+            <label for="criticalaccount">Critical Account</label><br></br>
+            <input type="radio" id="criticalaccount" name="criticalaccount" value="yes" onChange={onChange}/>
+                  <label for="yes">Yes</label><br></br>
+                  <input type="radio" id="criticalaccount" name="criticalaccount" value="no" onChange={onChange}/>
+                  <label for="no" >No</label><br></br>
+            
+
+            <label for="paymentoptions">Payment Options</label><br></br>
+                  <input type="checkbox" id="paymentoptions" name="paymentoptions" value="COD" onChange={handleSelectChange}/>
+                  <label for="COD">Cash on Delivery</label><br></br>
+                  <input type="checkbox" id="paymentoptions" name="paymentoptions" value="UPI" onChange={handleSelectChange}/>
+                  <label for="UPI">UPI</label><br></br>
+                  <input type="checkbox" id="paymentoptions" name="paymentoptions" value="CardPayment" onChange={handleSelectChange}/> 
+                  <label for="cardpayment">Card payment</label><br></br>
+
+         </fieldset>
+         <button>{formState.mode}</button>
+      </form>
+   );
+};
+
 export default App;
