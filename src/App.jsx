@@ -1,8 +1,6 @@
 import './index.css';
-import React  from 'react';
-console.clear();
-const { PureComponent } = React;
-class App extends PureComponent {
+import React, { Component } from 'react';
+class App extends Component {
    constructor(props){
       super(props);
       this.handleSelectChange = this.handleSelectChange.bind(this);
@@ -10,7 +8,7 @@ class App extends PureComponent {
    state = {
       formState: {
          id: '',
-         Name: "",
+         name: "",
          email: "",
          phone: "",
          website: "",
@@ -99,17 +97,16 @@ class App extends PureComponent {
    }
 
    radiobutton = (e) =>{
+      const {name, value} = e.target;
       this.setState({
-         type: e.currentTarget.value
+         [name]: value
          });
    }
    onSubmit = event => {
       const { users, formState } = this.state;
       event.preventDefault();
-      const name = event.target.querySelector("input[name='name']")
-         .value;
-      const email = event.target.querySelector("input[name='email']")
-         .value;
+      const name = event.target.querySelector("input[name='name']").value;
+      const email = event.target.querySelector("input[name='email']").value;
       const phone = event.target.querySelector("input[name='phone']").value;
       const website = event.target.querySelector("input[name='website']").value;
       const contactname = event.target.querySelector("input[name='contactname']").value;
@@ -123,6 +120,7 @@ class App extends PureComponent {
       const criticalaccount = event.target.querySelector("input[name='criticalaccount']").value;
       const paymentoptions = event.target.querySelector("input[name='paymentoptions']").value;
 
+      
       if (formState.mode === "submit") {
          this.setState({
             users: [
@@ -211,8 +209,9 @@ class App extends PureComponent {
       );
    }
 }
-
 const Table = ({ users = [], updateUser, deleteUser }) => {
+   localStorage.setItem("merchantform", JSON.stringify(users));
+   let StoredData = JSON.parse(localStorage.getItem("merchantform"));
    return (
       <div className="table">
          <div className="table-header">
@@ -235,7 +234,7 @@ const Table = ({ users = [], updateUser, deleteUser }) => {
             </div>
          </div>
          <div className="table-body">
-            {users.map((user, key) => {
+            {StoredData.map((user, key) => {
                return (
                   <div className={`row ${user.updating ? "updating" : ""}`}>
                      <div className="column">{user.name}</div>
@@ -290,7 +289,7 @@ const Field3 = ({ label = "", name = "", value = "", onChange }) => {
       </div>
    );
 };
-const Form = ({formState, onChange, onSubmit, selected, handleSelectChange, handlecheckChange}) => {
+const Form = ({formState, onChange, onSubmit, radiobutton, selected, handleSelectChange, handlecheckChange}) => {
    return (
       <form className="form" onSubmit={onSubmit}>
          <fieldset>
@@ -343,11 +342,11 @@ const Form = ({formState, onChange, onSubmit, selected, handleSelectChange, hand
                onChange={onChange}
             />
             <label for="type">Type</label><br></br>
-                  <input type="radio" id="type" name="type" value="smallbusiness"/>
+                  <input type="radio" id="type" name="type" value="SmallBusiness" onChange={onChange}/>
                   <label for="smallbusiness">Small Business</label><br></br>
-                  <input type="radio" id="type" name="type" value="enterprise"/>
+                  <input type="radio" id="type" name="type" value="Enterprise" onChange={onChange}/>
                   <label for="enterprise">Enterprise</label><br></br>
-                  <input type="radio" id="type" name="type" value="entrepreneur"/>
+                  <input type="radio" id="type" name="type" value="Entrepreneur"onChange={onChange}/>
                   <label for="entrepreneur">Entrepreneur</label><br></br>
          <label for="category">Category</label> 
          <select name="category" onChange={handleSelectChange} multiple={true}>
