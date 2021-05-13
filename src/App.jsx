@@ -212,7 +212,7 @@ return(
                   <label for="cardpayment">Card payment</label><br></br>
 
              <button className="newbtn" onClick = {listofItems} >
-                 Add Product
+                 Submit
              </button>
              <button className="newbtn-1" aria-hidden="true" onClick={() => {
                         deleteItems();
