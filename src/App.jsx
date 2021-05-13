@@ -70,18 +70,7 @@ function App() {
     setCriticalaccount(event.target.value);
   };
   const onPaymentoptionsChange = (event) =>{
-    let selected;
- 
-        let payment = event.target.value;
-
-
-        for (let i = 0; i < payment.length; i++) {
-            if (payment[i].checked) {
-                selected.push(payment[i].value);
-                //val=selected.join(",");
-            }
-        }
-        setPaymentoptions(selected);
+    setPaymentoptions(event.target.value);
   };
   useEffect(() => {
     const data = localStorage.getItem('data');
